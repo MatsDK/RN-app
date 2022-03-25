@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword } from '@firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { auth } from "../firebase";
 
@@ -8,7 +8,6 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = (props: any) => {
-	const [isLoggedIn, setIsLoggedIn] = useState(false)
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 
@@ -16,8 +15,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = (props: any) => {
 		try {
 			const credential = await signInWithEmailAndPassword(auth, email, password)
 			console.log(credential)
-			props.navigation.navigate("Home")
-			setIsLoggedIn(true)
 		} catch (err) {
 			console.log(err)
 		}

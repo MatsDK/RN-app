@@ -1,25 +1,14 @@
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { signOut } from "firebase/auth";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useUserState } from '../contexts/userContext';
 import { auth } from '../firebase';
-import { signOut, getAdditionalUserInfo, onAuthStateChanged, User } from "firebase/auth"
 
 interface HomeScreenProps {
 
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = (props: any) => {
-	const [user, setUser] = useState<null | User>(null)
-
-	useEffect(() => {
-		onAuthStateChanged(auth, (user) => {
-			if (user) {
-				setUser(user)
-			} else {
-				props.navigation.navigate("Login")
-			}
-		});
-		return () => { }
-	}, [])
+export const HomeScreen: React.FC<HomeScreenProps> = () => {
+	const { user } = useUserState()
 
 	const logout = async () => {
 		try {

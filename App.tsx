@@ -1,27 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-// import { Camera } from 'expo-camera';
-// import * as ImagePicker from 'expo-image-picker';
-import { Image, StyleSheet, Button, Text, View, TouchableOpacity } from 'react-native';
-// import { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from './src/screens/HomeScreen';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet } from 'react-native';
+import { UserContextProvider, useUserState } from './src/contexts/userContext';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { SignupScreen } from './src/screens/SignupScreen';
+import { HomeScreen } from './src/screens/HomeScreen';
 
-const Stack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
+const options = {
+  headerShown: false,
+  gestureEvent: false
+}
 
 export default () => {
   return (
     <NavigationContainer>
-      <StatusBar />
-      <Stack.Navigator>
-        <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} name="Login" component={LoginScreen} />
-        <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} name="Home" component={HomeScreen} />
-        <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} name="SignUp" component={SignupScreen} />
-      </Stack.Navigator>
+      <UserContextProvider>
+        <StatusBar />
+        <Routes />
+      </UserContextProvider>
     </NavigationContainer>
   )
+}
+
+const Routes: React.FC = () => {
+  const { user } = useUserState()
+
+  return user ? <HomeScreen /> :
+    <AuthStack.Navigator>
+      <AuthStack.Screen options={options} name="Login" component={LoginScreen} />
+      <AuthStack.Screen options={options} name="SignUp" component={SignupScreen} />
+    </AuthStack.Navigator>
 }
 
 // export default function App() {
@@ -89,15 +99,15 @@ export default () => {
 //   );
 // }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#222',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  camera: {
-    width: "100%",
-    height: "60%"
-  }
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#222',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   camera: {
+//     width: "100%",
+//     height: "60%"
+//   }
+// });

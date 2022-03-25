@@ -7,7 +7,7 @@ interface SignupScreenProps {
 
 }
 
-export const SignupScreen: React.FC<SignupScreenProps> = (props: any) => {
+export const SignupScreen: React.FC<SignupScreenProps> = () => {
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 
@@ -15,9 +15,6 @@ export const SignupScreen: React.FC<SignupScreenProps> = (props: any) => {
 		try {
 			const credential = await createUserWithEmailAndPassword(auth, email, password)
 			console.log(credential)
-
-			props.navigation.navigate("Login")
-
 		} catch (err) {
 			console.log(err)
 		}
