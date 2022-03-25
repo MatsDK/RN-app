@@ -7,7 +7,6 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { SignupScreen } from './src/screens/SignupScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 
-const AuthStack = createNativeStackNavigator();
 const options = {
   headerShown: false,
   gestureEvent: false
@@ -23,6 +22,13 @@ export default () => {
     </NavigationContainer>
   )
 }
+
+export type AuthStackParamList = {
+  "Login": undefined,
+  "SignUp": undefined
+}
+
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 const Routes: React.FC = () => {
   const { user } = useUserState()

@@ -1,13 +1,17 @@
 import { signInWithEmailAndPassword } from '@firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { authScreenNavigationType } from '../contexts/userContext';
 import { auth } from "../firebase";
 
 interface LoginScreenProps {
 
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = (props: any) => {
+export const LoginScreen: React.FC<LoginScreenProps> = () => {
+	const navigation = useNavigation<authScreenNavigationType>()
+
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 
@@ -44,7 +48,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = (props: any) => {
 				<TouchableOpacity onPress={login}>
 					<Text style={styles.button}>Login</Text>
 				</TouchableOpacity>
-				<Button onPress={() => props.navigation.navigate("SignUp")} title={"Sign Up"} />
+				<Button onPress={() => navigation.navigate("SignUp")} title={"Sign Up"} />
 			</View>
 		</KeyboardAvoidingView>
 	);
