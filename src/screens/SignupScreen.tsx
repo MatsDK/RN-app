@@ -1,11 +1,12 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from 'react'
 import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, StyleSheet, Button } from "react-native"
-import { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import { MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons"
 import { useNavigation } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { AuthStackParamList } from '../../App'
+import { setDoc, doc } from 'firebase/firestore'
 
 interface SignupScreenProps {
 
@@ -22,7 +23,12 @@ export const SignupScreen: React.FC<SignupScreenProps> = () => {
 	const signUp = async () => {
 		try {
 			const credential = await createUserWithEmailAndPassword(auth, email, password)
-			console.log(credential)
+			await setDoc(doc(firestore, "users", credential.user.uid),
+				{
+					email: credential.user.email,
+					username,
+				}
+			)
 		} catch (err) {
 			console.log(err)
 		}

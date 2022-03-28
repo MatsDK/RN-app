@@ -1,10 +1,10 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { authScreenNavigationType } from '../contexts/userContext';
 import { auth } from "../firebase";
-import { MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons"
 
 interface LoginScreenProps {
 
@@ -20,6 +20,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = () => {
 		try {
 			const credential = await signInWithEmailAndPassword(auth, email, password)
 			console.log(credential)
+
 		} catch (err) {
 			console.log(err)
 		}

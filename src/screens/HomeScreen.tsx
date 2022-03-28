@@ -21,7 +21,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 	return (
 		<View style={styles.container}>
 			<Text>Home</Text>
-			<Text>{user?.email}</Text>
+			<Text>{user?.username}</Text>
 			<TouchableOpacity onPress={logout}>
 				<Text style={styles.button}>Logout</Text>
 			</TouchableOpacity>
