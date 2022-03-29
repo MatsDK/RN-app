@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
 	container: {
 		padding: 10,
 		paddingTop: 50,
+		backgroundColor: "#fff",
+		height: "100%"
 	},
 	button: {
 		backgroundColor: "#000",

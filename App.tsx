@@ -1,12 +1,19 @@
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text } from 'react-native';
 import { authScreenNavigationType, UserContextProvider, useUserState } from './src/contexts/userContext';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { SignupScreen } from './src/screens/SignupScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { Entypo } from "@expo/vector-icons";
+
+import { LogBox } from 'react-native';
+import React from 'react';
+// LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();
 
 const options = {
   headerShown: false,
@@ -29,7 +36,32 @@ export type AuthStackParamList = {
   "SignUp": undefined
 }
 
+export type HomeStackParamList = {
+  "Home": undefined,
+  "Globe": undefined,
+  "Camera": undefined
+}
+
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const HomeNavigator = createBottomTabNavigator<HomeStackParamList>();
+
+const icons: { [key in keyof HomeStackParamList]: () => React.ReactNode } = {
+  "Home": () => (
+    <View>
+      <Entypo name="home" size={25} />
+    </View>
+  ),
+  "Globe": () => (
+    <View>
+      <Entypo name="globe" size={25} />
+    </View>
+  ),
+  "Camera": () => (
+    <View>
+      <Entypo name="camera" size={25} />
+    </View>
+  )
+}
 
 const Routes: React.FC = () => {
   const { user, userLoaded } = useUserState()
@@ -39,7 +71,29 @@ const Routes: React.FC = () => {
 
   if (!user) navigation.navigate("Login")
 
-  return user ? <HomeScreen /> :
+  return user ?
+    <HomeNavigator.Navigator tabBar={({ descriptors, state, insets, navigation }) => {
+      return (<View style={{ height: 75, display: "flex", flexDirection: "row", justifyContent: "space-evenly", borderTopWidth: 1, borderTopColor: "#000", alignItems: "center" }}>
+        {Object.values(descriptors).map(({ route: { name }, navigation }) => {
+          return (
+            <TouchableOpacity onPress={() => navigation.navigate(name)} style={{ alignItems: "center", borderTopColor: "#000", borderTopWidth: navigation.isFocused() ? 1 : 0, height: "100%", flex: 1 }}>
+              {icons[name as keyof HomeStackParamList]()}
+              <Text>{name}</Text>
+            </TouchableOpacity>
+          )
+        })}
+      </View>)
+    }}>
+      <HomeNavigator.Screen options={{
+        headerShown: false,
+      }} name="Home" component={HomeScreen} />
+      <HomeNavigator.Screen options={{
+        headerShown: false,
+      }} name="Camera" component={() => <View><Text>camera</Text></View>} />
+      <HomeNavigator.Screen options={{
+        headerShown: false,
+      }} name="Globe" component={() => <View><Text>Globe</Text></View>} />
+    </HomeNavigator.Navigator> :
     <AuthStack.Navigator>
       <AuthStack.Screen options={options} name="Login" component={LoginScreen} />
       <AuthStack.Screen options={options} name="SignUp" component={SignupScreen} />
