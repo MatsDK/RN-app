@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { CameraCapturedPicture } from "expo-camera";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import React, { createContext, useEffect } from "react";
@@ -10,7 +11,9 @@ import { auth, firestore } from "../firebase";
 
 interface UserContextType {
 	user: null | User,
-	userLoaded: boolean
+	userLoaded: boolean,
+	pictures: CameraCapturedPicture[],
+	setPictures: React.Dispatch<React.SetStateAction<CameraCapturedPicture[]>> | null
 }
 
 export interface DbUser {
@@ -22,10 +25,12 @@ export type User = DbUser & { uid: string }
 
 const defaultUserContext: UserContextType = {
 	user: null,
-	userLoaded: false
+	userLoaded: false,
+	pictures: [],
+	setPictures: null
 }
 
-const UserContext = createContext<UserContextType>(defaultUserContext)
+export const UserContext = createContext<UserContextType>(defaultUserContext)
 
 export type authScreenNavigationType = StackNavigationProp<AuthStackParamList, "Login">
 
@@ -33,6 +38,8 @@ export const UserContextProvider: React.FC = ({ children }) => {
 	// const navigation = useNavigation<authScreenNavigationType>()
 	const [user, setUser] = useState<DbUser & { uid: string } | null>(null)
 	const [userLoaded, setUserLoaded] = useState<boolean>(false)
+
+	const [pictures, setPictures] = useState<CameraCapturedPicture[]>([])
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -56,7 +63,7 @@ export const UserContextProvider: React.FC = ({ children }) => {
 	}, [])
 
 	return (
-		<UserContext.Provider value={{ user, userLoaded }}>
+		<UserContext.Provider value={{ user, userLoaded, pictures, setPictures }}>
 			{children}
 		</UserContext.Provider>
 	)

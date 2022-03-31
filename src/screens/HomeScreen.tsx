@@ -1,5 +1,5 @@
 import { signOut } from "firebase/auth";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useUserState } from '../contexts/userContext';
 import { auth } from '../firebase';
 
@@ -25,6 +25,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 			<TouchableOpacity onPress={logout}>
 				<Text style={styles.button}>Logout</Text>
 			</TouchableOpacity>
+
 		</View>
 	);
 }
