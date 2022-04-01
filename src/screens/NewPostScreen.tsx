@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { PictureOverlay } from '../components/PictureOverlay';
 import * as Location from "expo-location"
 import { StyleSheet } from 'react-native';
 import { TouchableOpacity, Image, View, Text, ScrollView } from "react-native"
@@ -57,32 +58,10 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 		</View>
 	);
 }
-
-const PictureOverlay: React.FC<{ pictureIdx: number, hide: any }> = ({ pictureIdx, hide }) => {
-	const [pictures] = usePictures()
-	let picture = pictures[pictureIdx]
-
-	return (
-		<TouchableOpacity onPress={hide} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: 1, backgroundColor: "#000000c5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-			<Image
-				source={{
-					uri: picture.uri,
-				}}
-				style={{
-					aspectRatio: picture.width / picture.height,
-					width: "90%"
-				}}
-			/>
-		</TouchableOpacity>
-	)
-
-}
-
 const styles = StyleSheet.create({
 	container: {
-		// paddingTop: 50,
-		// padding: 40,
-		height: "100%"
+		height: "100%",
+		backgroundColor: "#fff"
 	},
 	title: {
 		fontWeight: "500",
