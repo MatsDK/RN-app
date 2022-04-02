@@ -1,14 +1,11 @@
 import React from "react"
-import { Button, View, Image, ScrollView, TouchableOpacity, StyleSheet, Platform, Dimensions, Text } from "react-native"
+import { Dimensions, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { usePictures } from "../hooks/usePictures"
-
 
 interface PictureOverlayProps {
 	pictureIdx: number,
 	hide: () => void
 }
-
-
 
 export const PictureOverlay: React.FC<PictureOverlayProps> = ({ pictureIdx, hide }) => {
 	const [pictures] = usePictures()
@@ -65,7 +62,6 @@ export const PictureOverlay: React.FC<PictureOverlayProps> = ({ pictureIdx, hide
 					))
 				}
 			</ScrollView>
-
 		</View>
 	)
 }

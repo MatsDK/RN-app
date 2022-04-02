@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import * as Location from "expo-location";
+import { v4 } from "uuid"
+import { setDoc, doc, addDoc, CollectionReference, collection } from "firebase/firestore";
+import { ref, uploadBytesResumable } from "firebase/storage";
+import React, { useEffect, useState } from 'react';
+import { Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PictureOverlay } from '../components/PictureOverlay';
-import * as Location from "expo-location"
-import { StyleSheet } from 'react-native';
-import { TouchableOpacity, Image, View, Text, ScrollView } from "react-native"
+import { firestore, storageRef } from '../firebase';
 import { usePictures } from '../hooks/usePictures';
 
 interface NewPostScreenProps {
@@ -26,6 +29,43 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 			setLocation(location);
 		})();
 	}, []);
+
+
+	const upload = async () => {
+		if (pictures.length === 0 || !location) return null
+
+		const imageIds: string[] = []
+		for (const { uri } of pictures) imageIds.push(await uploadImage(uri))
+
+		await addDoc(collection(firestore, "posts"),
+			{
+				images: imageIds,
+				lon: location.coords.longitude,
+				lat: location.coords.latitude
+			}
+		)
+	}
+
+	const uploadImage = async (uri: string) => {
+		const blob: Blob = await new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = function () {
+				resolve(xhr.response);
+			};
+			xhr.onerror = function (e) {
+				console.log(e);
+				reject(new TypeError("Network request failed"));
+			};
+			xhr.responseType = "blob";
+			xhr.open("GET", uri, true);
+			xhr.send(null);
+		});
+
+		const id = new Date().toISOString()
+		await uploadBytesResumable(storageRef(`memo-eab94.appspot.com/${id}`), blob)
+
+		return id
+	}
 
 	return (
 		<View style={styles.container}>
@@ -54,6 +94,7 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 					})}
 				</ScrollView>
 				<Text>{JSON.stringify(location)}</Text>
+				<Button title="Upload" onPress={upload} />
 			</View>
 		</View>
 	);
