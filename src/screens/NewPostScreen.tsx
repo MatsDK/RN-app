@@ -1,10 +1,12 @@
 import * as Location from "expo-location";
-import { v4 } from "uuid"
-import { setDoc, doc, addDoc, CollectionReference, collection } from "firebase/firestore";
-import { ref, uploadBytesResumable } from "firebase/storage";
+import { addDoc, collection } from "firebase/firestore";
+import { uploadBytesResumable } from "firebase/storage";
+import moment from "moment";
 import React, { useEffect, useState } from 'react';
 import { Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { TextInput } from "react-native-gesture-handler";
 import { PictureOverlay } from '../components/PictureOverlay';
+import { useUserState } from "../contexts/userContext";
 import { firestore, storageRef } from '../firebase';
 import { usePictures } from '../hooks/usePictures';
 
@@ -12,10 +14,21 @@ interface NewPostScreenProps {
 
 }
 
+export interface Post {
+	images: string[],
+	lon: number,
+	lat: number,
+	caption: string | null,
+	timestamp: string,
+	user: string
+}
+
 export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 	const [pictures] = usePictures()
+	const { user } = useUserState()
 	const [location, setLocation] = useState<Location.LocationObject | null>(null);
 	const [pictureOverlayIdx, setPictureOverlayIdx] = useState<null | number>(null)
+	const [caption, setCaption] = useState<string | null>(null)
 
 	useEffect(() => {
 		(async () => {
@@ -32,18 +45,26 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 
 
 	const upload = async () => {
-		if (pictures.length === 0 || !location) return null
+		if (pictures.length === 0 || !location || !user) return null
 
 		const imageIds: string[] = []
 		for (const { uri } of pictures) imageIds.push(await uploadImage(uri))
 
-		await addDoc(collection(firestore, "posts"),
-			{
-				images: imageIds,
-				lon: location.coords.longitude,
-				lat: location.coords.latitude
-			}
-		)
+		try {
+
+			await addDoc(collection(firestore, "posts"),
+				{
+					images: imageIds,
+					lon: location.coords.longitude,
+					lat: location.coords.latitude,
+					caption,
+					user: user.uid,
+					timestamp: moment().utc().toISOString()
+				} as Post
+			)
+		} catch (e) {
+			console.log(e, "\n\n")
+		}
 	}
 
 	const uploadImage = async (uri: string) => {
@@ -62,7 +83,7 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 		});
 
 		const id = new Date().toISOString()
-		await uploadBytesResumable(storageRef(`memo-eab94.appspot.com/${id}`), blob)
+		await uploadBytesResumable(storageRef(id), blob)
 
 		return id
 	}
@@ -94,6 +115,11 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 					})}
 				</ScrollView>
 				<Text>{JSON.stringify(location)}</Text>
+				<TextInput
+					placeholder="Caption"
+					value={caption || ""}
+					onChange={e => setCaption(e.nativeEvent.text)}
+				/>
 				<Button title="Upload" onPress={upload} />
 			</View>
 		</View>
