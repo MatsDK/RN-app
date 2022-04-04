@@ -18,6 +18,7 @@ interface UserContextType {
 
 export interface DbUser {
 	email: string,
+	id: string,
 	username: string,
 }
 

@@ -1,4 +1,5 @@
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -56,7 +57,7 @@ const Routes: React.FC = () => {
   if (!user) navigation.navigate("Login")
 
   return user ?
-    <HomeNavigator.Navigator tabBar={HomeNavigatorTabBar}>
+    <HomeNavigator.Navigator tabBar={HomeNavigatorTabBar} >
       <HomeNavigator.Screen options={{
         headerShown: false,
       }} name="Home" component={HomeScreen} />

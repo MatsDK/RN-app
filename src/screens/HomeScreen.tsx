@@ -1,11 +1,12 @@
 import { signOut } from "firebase/auth";
-import { collection, doc, getDocs, query } from "firebase/firestore";
-import { getDownloadURL, ref } from "firebase/storage";
-import moment from "moment";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ProfileButton } from "../components/ProfileButton";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useUserState } from '../contexts/userContext';
-import { auth, firestore, storageRef } from '../firebase';
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { PostsItem } from "../components/Post";
+import { User, useUserState } from '../contexts/userContext';
+import { auth, firestore } from '../firebase';
 import { Post } from "./NewPostScreen";
 
 interface HomeScreenProps {
@@ -26,59 +27,64 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 
 	useEffect(() => {
 		; (async () => {
-			const res = await getDocs(collection(firestore, "posts"))
-			setPosts(res.docs.map((doc) => doc.data() as Post))
+			if (!user) return
+			const postsRes = await getDocs(query(collection(firestore, "posts"), where("userId", "==", user.uid)))
+			// const postsRes = await getDocs(query(collection(firestore, "posts"), where("userId", "!=", user.uid)))
+			const posts = postsRes.docs.map((doc) => doc.data() as Post);
+
+			const usersRes = await getDocs(query(collection(firestore, "users"), where("id", "in", posts.map(({ userId }) => userId))))
+			const users = usersRes.docs.map((doc) => doc.data() as User)
+
+			setPosts(posts.map((post) => {
+				const user = users.find(({ id }) => id === post.userId)
+				return user ? { ...post, user } : post
+			}))
 		})()
 	}, [])
 
+	if (!user) return <View><Text>test</Text></View>
+
 	return (
-		<View style={styles.container}>
-			<Text>Home</Text>
-			{/* <Text>{user?.username}</Text> */}
+		<View style={styles.container} >
+			<View style={styles.header}>
+				<Text style={styles.title}>Posts</Text>
+				<ProfileButton />
+			</View>
 			<TouchableOpacity onPress={logout}>
 				<Text style={styles.button}>Logout</Text>
 			</TouchableOpacity>
-			{posts.map((post, idx) => <PostsItem post={post} key={idx} />)}
+			<ScrollView
+				style={{ paddingBottom: 10 }}
+				refreshControl={
+					<RefreshControl
+						refreshing={false}
+						onRefresh={() => console.log("refresh")}
+					/>}
+			>
+				{!!posts.length &&
+					posts.map((post, idx) => <PostsItem post={post} key={idx} />)}
+			</ScrollView>
 		</View>
 	);
 }
-
-const PostsItem: React.FC<{ post: Post }> = ({ post: { images, lon, lat, caption, timestamp } }) => {
-	const [uri, setUri] = useState("")
-
-	useEffect(() => {
-		getDownloadURL(storageRef(images[0])).then((res) => {
-			setUri(res)
-		})
-	}, [])
-
-	return (
-		<View>
-			<Text>Lat: {lat}, long: {lon}</Text>
-			<Text>{caption}, {moment(timestamp).fromNow()}</Text>
-			{!!uri &&
-				<Image
-					source={{
-						uri,
-					}}
-					style={{
-						height: 200,
-						width: 300,
-					}}
-
-				/>
-			}
-		</View>
-	)
-
-}
-
 const styles = StyleSheet.create({
 	container: {
-		padding: 10,
-		paddingTop: 50,
 		backgroundColor: "#fff",
-		height: "100%"
+		height: "100%",
+		paddingTop: 40
+
+	},
+	header: {
+		paddingHorizontal: 10,
+		height: 40,
+		display: "flex",
+		alignItems: "center",
+		flexDirection: "row",
+		justifyContent: "space-between"
+	},
+	title: {
+		fontSize: 35,
+		fontWeight: "500",
 	},
 	button: {
 		backgroundColor: "#000",

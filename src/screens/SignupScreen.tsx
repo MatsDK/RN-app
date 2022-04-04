@@ -27,6 +27,7 @@ export const SignupScreen: React.FC<SignupScreenProps> = () => {
 				{
 					email: credential.user.email,
 					username,
+					id: credential.user.uid
 				}
 			)
 		} catch (err) {
