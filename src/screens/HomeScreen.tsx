@@ -1,7 +1,7 @@
 import { signOut } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProfileButton } from "../components/ProfileButton";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PostsItem } from "../components/Post";
@@ -16,6 +16,7 @@ interface HomeScreenProps {
 export const HomeScreen: React.FC<HomeScreenProps> = () => {
 	const { user } = useUserState()
 	const [posts, setPosts] = useState<Post[]>([])
+	const [refreshing, setRefresing] = useState<boolean>(false)
 
 	const logout = async () => {
 		try {
@@ -25,22 +26,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 		}
 	}
 
+	const fetchPosts = async () => {
+		if (!user) return
+		const postsRes = await getDocs(query(collection(firestore, "posts"), orderBy("timestamp", "desc"), where("userId", "==", user.uid)))
+		const posts = postsRes.docs.map((doc) => doc.data() as Post);
+
+		const usersRes = await getDocs(query(collection(firestore, "users"), where("id", "in", posts.map(({ userId }) => userId))))
+		const users = usersRes.docs.map((doc) => doc.data() as User)
+
+		setPosts(posts.map((post) => {
+			const user = users.find(({ id }) => id === post.userId)
+			return user ? { ...post, user } : post
+		}))
+	}
+
 	useEffect(() => {
-		; (async () => {
-			if (!user) return
-			const postsRes = await getDocs(query(collection(firestore, "posts"), where("userId", "==", user.uid)))
-			// const postsRes = await getDocs(query(collection(firestore, "posts"), where("userId", "!=", user.uid)))
-			const posts = postsRes.docs.map((doc) => doc.data() as Post);
-
-			const usersRes = await getDocs(query(collection(firestore, "users"), where("id", "in", posts.map(({ userId }) => userId))))
-			const users = usersRes.docs.map((doc) => doc.data() as User)
-
-			setPosts(posts.map((post) => {
-				const user = users.find(({ id }) => id === post.userId)
-				return user ? { ...post, user } : post
-			}))
-		})()
+		fetchPosts()
 	}, [])
+
+	useEffect(() => {
+		if (refreshing) {
+			fetchPosts().then(() => setRefresing(false))
+		}
+	}, [refreshing])
 
 	if (!user) return <View><Text>test</Text></View>
 
@@ -57,9 +65,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 				style={{ paddingBottom: 10 }}
 				refreshControl={
 					<RefreshControl
-						refreshing={false}
-						onRefresh={() => console.log("refresh")}
-					/>}
+						refreshing={refreshing}
+						onRefresh={() => setRefresing(true)}
+					/>
+				}
 			>
 				{!!posts.length &&
 					posts.map((post, idx) => <PostsItem post={post} key={idx} />)}

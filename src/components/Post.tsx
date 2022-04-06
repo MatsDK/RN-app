@@ -25,7 +25,6 @@ export const PostsItem: React.FC<PostItemProps> = ({ post: { images, lon, lat, c
 				<Text style={styles.username}>{user?.username}</Text>
 				<Text style={styles.location}>Lat: {lat}, long: {lon}</Text>
 			</View>
-			{/* <Text>{user?.username}, {moment(timestamp).fromNow()}</Text> */}
 			{!!uri &&
 				<Image
 					source={{
@@ -38,14 +37,20 @@ export const PostsItem: React.FC<PostItemProps> = ({ post: { images, lon, lat, c
 					}}
 				/>
 			}
-			<Text>{caption} </Text>
+			<View style={styles.postBottom}>
+				{!!caption && <Text style={styles.caption}>{caption} </Text>}
+				<Text style={styles.timestamp}>{moment(timestamp).fromNow()}</Text>
+			</View>
+
 		</View>
 	)
 }
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
-		marginTop: 10
+		marginTop: 10,
+		// borderBottomWidth: 1,
+		borderBottomColor: "#eee"
 	},
 	postHeader: {
 		width: "100%",
@@ -63,5 +68,19 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: "300",
 		color: "#555"
+	},
+	postBottom: {
+		display: "flex",
+		paddingHorizontal: 10,
+		paddingVertical: 5
+	},
+	caption: {
+		fontSize: 16,
+	},
+	timestamp: {
+		fontSize: 13,
+		fontWeight: "300",
+		color: "#555",
+		textAlign: "right"
 	}
 })

@@ -21,13 +21,15 @@ export interface Post {
 	caption: string | null,
 	timestamp: string,
 	userId: string,
-	user?: User
+	user?: User,
+	locationName: string
 }
 
 export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 	const [pictures] = usePictures()
 	const { user } = useUserState()
 	const [location, setLocation] = useState<Location.LocationObject | null>(null);
+	const [locationName, setLocationName] = useState<string>("");
 	const [pictureOverlayIdx, setPictureOverlayIdx] = useState<null | number>(null)
 	const [caption, setCaption] = useState<string | null>(null)
 
@@ -59,7 +61,8 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 					lat: location.coords.latitude,
 					caption,
 					userId: user.uid,
-					timestamp: moment().utc().toISOString()
+					timestamp: moment().utc().toISOString(),
+					locationName
 				}
 			)
 		} catch (e) {
@@ -83,7 +86,7 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 		});
 
 		const id = new Date().toISOString()
-		await uploadBytes(storageRef(id), blob)
+		await uploadBytesResumable(storageRef(id), blob)
 
 		return id
 	}
@@ -119,6 +122,11 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 					placeholder="Caption"
 					value={caption || ""}
 					onChange={e => setCaption(e.nativeEvent.text)}
+				/>
+				<TextInput
+					placeholder="Location name"
+					value={locationName}
+					onChange={e => setLocationName(e.nativeEvent.text)}
 				/>
 				<Button title="Upload" onPress={upload} />
 			</View>
