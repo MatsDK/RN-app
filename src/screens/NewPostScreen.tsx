@@ -48,7 +48,7 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 
 
 	const upload = async () => {
-		if (pictures.length === 0 || !location || !user) return null
+		if (pictures.length === 0 || !location || !user || !caption?.trim()) return null
 
 		const imageIds: string[] = []
 		for (const { uri } of pictures) imageIds.push(await uploadImage(uri))
@@ -59,7 +59,7 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 					images: imageIds,
 					lon: location.coords.longitude,
 					lat: location.coords.latitude,
-					caption,
+					caption: caption.trim(),
 					userId: user.uid,
 					timestamp: moment().utc().toISOString(),
 					locationName
@@ -117,13 +117,16 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 						)
 					})}
 				</ScrollView>
-				<Text>{JSON.stringify(location)}</Text>
+				{/* <Text>{JSON.stringify(location)}</Text> */}
 				<TextInput
+					style={styles.input}
+					multiline
 					placeholder="Caption"
 					value={caption || ""}
 					onChange={e => setCaption(e.nativeEvent.text)}
 				/>
 				<TextInput
+					style={styles.input}
 					placeholder="Location name"
 					value={locationName}
 					onChange={e => setLocationName(e.nativeEvent.text)}
@@ -143,5 +146,15 @@ const styles = StyleSheet.create({
 		fontSize: 35
 	},
 	picturesContainer: {
+	},
+	input: {
+		borderWidth: 1,
+		borderColor: "#ddd",
+		borderRadius: 8,
+		width: "100%",
+		marginVertical: 5,
+		paddingVertical: 6,
+		paddingHorizontal: 10,
+		fontSize: 20,
 	}
 })

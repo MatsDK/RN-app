@@ -14,6 +14,7 @@ import { HomeNavigatorTabBar } from './src/components/HomeNavigatorTabBar';
 import { LogBox } from 'react-native';
 import { CameraScreen } from './src/screens/CameraScreen';
 import { NewPostScreen } from './src/screens/NewPostScreen';
+import { ProfileScreen } from './src/screens/ProfileScreen';
 // LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();
 
@@ -42,7 +43,8 @@ export type HomeStackParamList = {
   "Home": undefined,
   "Globe": undefined,
   "Camera": undefined,
-  "NewPost": undefined
+  "NewPost": undefined,
+  "Profile": { userId: string }
 }
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -70,6 +72,9 @@ const Routes: React.FC = () => {
       <HomeNavigator.Screen options={{
         headerShown: false,
       }} name="NewPost" component={NewPostScreen} />
+      <HomeNavigator.Screen options={{
+        headerShown: false,
+      }} name="Profile" component={ProfileScreen} />
     </HomeNavigator.Navigator> :
     <AuthStack.Navigator>
       <AuthStack.Screen options={options} name="Login" component={LoginScreen} />

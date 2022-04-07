@@ -18,7 +18,7 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({ }) => {
 
 	if (!user) return <View></View>
 	return (
-		<TouchableOpacity style={styles.container} onPress={() => navigation.navigate("Globe")}>
+		<TouchableOpacity style={styles.container} onPress={() => navigation.navigate("Profile", { userId: user.id })}>
 			<Text>{user.username}</Text>
 		</TouchableOpacity>
 	);

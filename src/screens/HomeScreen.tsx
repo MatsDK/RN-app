@@ -1,10 +1,9 @@
 import { signOut } from "firebase/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ProfileButton } from "../components/ProfileButton";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PostsItem } from "../components/Post";
+import { ProfileButton } from "../components/ProfileButton";
 import { User, useUserState } from '../contexts/userContext';
 import { auth, firestore } from '../firebase';
 import { Post } from "./NewPostScreen";
@@ -12,6 +11,7 @@ import { Post } from "./NewPostScreen";
 interface HomeScreenProps {
 
 }
+
 
 export const HomeScreen: React.FC<HomeScreenProps> = () => {
 	const { user } = useUserState()
