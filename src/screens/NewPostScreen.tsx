@@ -131,7 +131,11 @@ export const NewPostScreen: React.FC<NewPostScreenProps> = ({ }) => {
 					value={locationName}
 					onChange={e => setLocationName(e.nativeEvent.text)}
 				/>
-				<Button title="Upload" onPress={upload} />
+				<TouchableOpacity>
+					<Text style={styles.uploadButton}>
+						Upload
+					</Text>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
@@ -155,6 +159,16 @@ const styles = StyleSheet.create({
 		marginVertical: 5,
 		paddingVertical: 6,
 		paddingHorizontal: 10,
+		fontSize: 20,
+	},
+	uploadButton: {
+		marginTop: 15,
+		backgroundColor: "#000",
+		paddingVertical: 5,
+		textAlign: "center",
+		color: "#fff",
+		borderRadius: 6,
+		overflow: "hidden",
 		fontSize: 20,
 	}
 })

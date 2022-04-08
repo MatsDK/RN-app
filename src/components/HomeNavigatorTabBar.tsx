@@ -26,6 +26,9 @@ const icons: { [key in keyof HomeStackParamList]: () => React.ReactNode } = {
 	),
 	"NewPost": () => (
 		<View></View>
+	),
+	"Profile": () => (
+		<View></View>
 	)
 }
 

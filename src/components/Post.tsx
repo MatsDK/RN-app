@@ -1,10 +1,12 @@
 import { getDownloadURL } from "firebase/storage"
-import { View, Image, Text } from "react-native"
+import { View, Image, Text, TouchableOpacity } from "react-native"
 import moment from "moment"
 import React, { useState, useEffect } from "react"
 import { storageRef } from "../firebase"
 import { Post } from "../screens/NewPostScreen"
 import { StyleSheet } from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import { homeScreenNavigationType } from "./ProfileButton"
 
 interface PostItemProps {
 	post: Post
@@ -12,6 +14,7 @@ interface PostItemProps {
 
 export const PostsItem: React.FC<PostItemProps> = ({ post: { images, lon, lat, caption, timestamp, user } }) => {
 	const [uri, setUri] = useState("")
+	const navigation = useNavigation<homeScreenNavigationType>()
 
 	useEffect(() => {
 		getDownloadURL(storageRef(images[0])).then((res) => {
@@ -22,7 +25,9 @@ export const PostsItem: React.FC<PostItemProps> = ({ post: { images, lon, lat, c
 	return (
 		<View style={styles.container}>
 			<View style={styles.postHeader}>
-				<Text style={styles.username}>{user?.username}</Text>
+				<TouchableOpacity onPress={() => user?.id && navigation.navigate("Profile", { userId: user.id })}>
+					<Text style={styles.username}>{user?.username}</Text>
+				</TouchableOpacity>
 				<Text style={styles.location}>Lat: {lat}, long: {lon}</Text>
 			</View>
 			{!!uri &&
@@ -38,7 +43,7 @@ export const PostsItem: React.FC<PostItemProps> = ({ post: { images, lon, lat, c
 				/>
 			}
 			<View style={styles.postBottom}>
-				{!!caption && <Text style={styles.caption}>{caption} </Text>}
+				{!!caption && <Text style={styles.caption}>{caption}</Text>}
 				<Text style={styles.timestamp}>{moment(timestamp).fromNow()}</Text>
 			</View>
 
