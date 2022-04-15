@@ -27,8 +27,8 @@ export const ProfileButton: React.FC<ProfileButtonProps> = ({ }) => {
 const styles = StyleSheet.create({
 	container: {
 		width: 50,
-		height: "100%",
 		display: "flex",
-		justifyContent: "center"
+		justifyContent: "center",
+		alignItems: "center"
 	}
 })

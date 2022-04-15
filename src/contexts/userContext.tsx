@@ -20,6 +20,8 @@ export interface DbUser {
 	email: string,
 	id: string,
 	username: string,
+	friends: string[],
+	friendRequests: string[]
 }
 
 export type User = DbUser & { uid: string }
@@ -36,7 +38,6 @@ export const UserContext = createContext<UserContextType>(defaultUserContext)
 export type authScreenNavigationType = StackNavigationProp<AuthStackParamList, "Login">
 
 export const UserContextProvider: React.FC = ({ children }) => {
-	// const navigation = useNavigation<authScreenNavigationType>()
 	const [user, setUser] = useState<DbUser & { uid: string } | null>(null)
 	const [userLoaded, setUserLoaded] = useState<boolean>(false)
 
@@ -55,9 +56,6 @@ export const UserContextProvider: React.FC = ({ children }) => {
 				}
 				setUserLoaded(true)
 			}
-
-
-
 		});
 
 		return unsubscribe

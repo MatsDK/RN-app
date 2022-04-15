@@ -1,20 +1,19 @@
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, View, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import { LogBox, Text, View } from 'react-native';
+import { HomeNavigatorTabBar } from './src/components/HomeNavigatorTabBar';
 import { authScreenNavigationType, UserContextProvider, useUserState } from './src/contexts/userContext';
-import { LoginScreen } from './src/screens/LoginScreen';
-import { SignupScreen } from './src/screens/SignupScreen';
+import { LoginScreen } from './src/screens/auth/LoginScreen';
+import { SignupScreen } from './src/screens/auth/SignupScreen';
+import { CameraScreen } from './src/screens/CameraScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { HomeNavigatorTabBar } from './src/components/HomeNavigatorTabBar';
-
-import { LogBox } from 'react-native';
-import { CameraScreen } from './src/screens/CameraScreen';
 import { NewPostScreen } from './src/screens/NewPostScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { SearchFriendsScreen } from "./src/screens/SearchFriendsScreen";
+
 // LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();
 
@@ -44,7 +43,8 @@ export type HomeStackParamList = {
   "Globe": undefined,
   "Camera": undefined,
   "NewPost": undefined,
-  "Profile": { userId: string }
+  "Profile": { userId: string },
+  "SearchFriends": undefined
 }
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -75,6 +75,9 @@ const Routes: React.FC = () => {
       <HomeNavigator.Screen options={{
         headerShown: false,
       }} name="Profile" component={ProfileScreen} />
+      <HomeNavigator.Screen options={{
+        headerShown: false,
+      }} name="SearchFriends" component={SearchFriendsScreen} />
     </HomeNavigator.Navigator> :
     <AuthStack.Navigator>
       <AuthStack.Screen options={options} name="Login" component={LoginScreen} />

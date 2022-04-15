@@ -3,10 +3,13 @@ import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PostsItem } from "../components/Post";
-import { ProfileButton } from "../components/ProfileButton";
+import { homeScreenNavigationType, ProfileButton } from "../components/ProfileButton";
 import { User, useUserState } from '../contexts/userContext';
 import { auth, firestore } from '../firebase';
 import { Post } from "./NewPostScreen";
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
+
 
 interface HomeScreenProps {
 
@@ -15,6 +18,8 @@ interface HomeScreenProps {
 
 export const HomeScreen: React.FC<HomeScreenProps> = () => {
 	const { user } = useUserState()
+	const navigation = useNavigation<homeScreenNavigationType>()
+
 	const [posts, setPosts] = useState<Post[]>([])
 	const [refreshing, setRefresing] = useState<boolean>(false)
 
@@ -56,7 +61,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = () => {
 		<View style={styles.container} >
 			<View style={styles.header}>
 				<Text style={styles.title}>Posts</Text>
-				<ProfileButton />
+				<View style={styles.headerRight}>
+					<TouchableOpacity onPress={() => navigation.navigate("SearchFriends")}>
+						<Ionicons style={{ marginRight: 10 }} name="search" size={24} color="black" />
+					</TouchableOpacity>
+					<ProfileButton />
+				</View>
 			</View>
 			<TouchableOpacity onPress={logout}>
 				<Text style={styles.button}>Logout</Text>
@@ -94,6 +104,11 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 35,
 		fontWeight: "500",
+		flex: 1
+	},
+	headerRight: {
+		flexDirection: "row",
+		alignItems: "center"
 	},
 	button: {
 		backgroundColor: "#000",

@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { getDocs, query, collection, orderBy, where } from '@firebase/firestore'
 import { firestore } from '../firebase'
 import { PostsItem } from './Post'
+import { useUserState } from '../contexts/userContext'
 
 interface UserPostsContainerProps {
 	userId: string,
@@ -13,12 +14,13 @@ interface UserPostsContainerProps {
 
 export const UserPostsContainer: React.FC<UserPostsContainerProps> = ({ userId, setPostsCount }) => {
 	const [posts, setPosts] = useState<PostType[]>([])
+	const { user } = useUserState()
 
 	useEffect(() => {
 		; (async () => {
 			const postsRes = (
 				await getDocs(query(collection(firestore, "posts"), orderBy("timestamp", "desc"), where("userId", "==", userId)))
-			).docs.map(post => post.data() as PostType)
+			).docs.map(post => ({ ...post.data(), user }) as PostType)
 
 			setPosts(postsRes)
 			setPostsCount(postsRes.length)
